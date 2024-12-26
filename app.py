@@ -2,8 +2,8 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output, State
 
-from layout.input_form import create_input_form
-from layout.graphs import create_graphs
+from layout.input_form import create_input_form,register_callbacks
+from layout.graphs import create_graphs , register_callback_graph
 
 
 # here we initilize our dash app
@@ -35,8 +35,8 @@ def display_page(pathname) :
         return create_input_form()
     
 
-
-
+register_callbacks(app)
+register_callback_graph(app)
 
 # input_form.register_callbacks(app)
 

@@ -70,25 +70,30 @@ def add_arguments(parser: ArgumentParser):
         help="how many digits you want after the decimal point",
     )
 
-
 def parse_args() -> Args:
-    if os.path.exists("args.json"):
-        with open("args.json", "r") as a:
-            dict = json.load(a)
-            # convert str to enum
-            dict["filter_mode"] = FilterMode[dict["filter_mode"]]
-            dict["processing_mode"] = ProcessingMode[dict["processing_mode"]]
-            return Args(**dict)
 
     parser = ArgumentParser(
         prog="Bad Words Filter App",
-        description="filter the specified columns from a big compressed csv file the bad words rows.",
+        description="Filter the specified columns from a big compressed CSV file of bad words rows.",
     )
     add_arguments(parser)
-    args = parser.parse_args()
-    # if user provided enum values as str so i convert it
-    if type(args.filter_mode) == str:
-        args.filter_mode = FilterMode[args.filter_mode]
-    if type(args.processing_mode) == str:
-        args.processing_mode = ProcessingMode[args.processing_mode]
-    return Args(**vars(args))
+    cmd_args = parser.parse_args()
+
+
+    args_dict = vars(cmd_args)
+
+
+    if os.path.exists("args.json"):
+        with open("args.json", "r") as f:
+            json_args = json.load(f)
+
+  
+        for key, value in json_args.items():
+            if key not in args_dict or args_dict[key] is None:
+                args_dict[key] = value
+
+    args_dict["filter_mode"] = FilterMode[args_dict["filter_mode"]]
+    args_dict["processing_mode"] = ProcessingMode[args_dict["processing_mode"]]
+
+    # Return as an Args dataclass
+    return Args(**args_dict)

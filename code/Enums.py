@@ -10,3 +10,4 @@ class ProcessingMode(Enum):
     MultiThreading = 0
     MultiProcessing = 1
     ProcessesPool = 2
+    Hybird=3

@@ -24,6 +24,7 @@ class Consumer:
         self.args = args
 
     def start_filtering(self):
+        is_first_filter = True
         while True:
             if self.chunks_queue.empty():
                 continue
@@ -32,9 +33,7 @@ class Consumer:
                 break
             (index, chunk) = tuple
             # filtering
-            start_time = time()
-            healthy_rows_number, unhealthy_rows_number = self.text_filter.filter(chunk)
-            end_time = time()
+            healthy_rows_number, unhealthy_rows_number , chunk_filtering_time = self.text_filter.filter(chunk , index)
 
             # add the time taken to filter the chunk
             self.filtering_info_queue.put(
@@ -42,18 +41,15 @@ class Consumer:
                     index,
                     ChunkFilteringInfo(
                         filtering_time=round(
-                            end_time - start_time, self.args.rounding_place
+                            chunk_filtering_time, self.args.rounding_place
                         ),
                         number_of_healthy=healthy_rows_number,
                         number_of_unhealthy=unhealthy_rows_number,
                     ),
                 )
             )
-            logging.info(
-                "%s  Consumer: finish filtering chunk number %s",
-                elapsed(self.args.starting_time),
-                index + 1,
-            )
+
+
 
     def run(self):
         logging.info(
